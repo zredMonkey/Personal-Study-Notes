@@ -122,11 +122,14 @@ docker --help
 //           --no-trunc:显示完整的镜像信息
 docker images
 
-// 
+// --options --no-trunc : 显示完整的镜像描述
+//           -s : 列出收藏数不小于指定值的镜像。
+//           --automated : 只列出 automated build类型的镜像；
 docker search 某个XXX镜像名字
 
-// 
+// 下载镜像
 docker pull 某个XXX镜像名字
+docker pull 镜像名字[:TAG]
 
 // 删除某个镜像
 docker rmi 某个XXX镜像名字
@@ -142,32 +145,308 @@ docker rmi -f $(docker images -qa)
 ### 5.3 容器命令
 **根本前提：有镜像才能创建容器**
 
-
 ```
 // 新建并启动容器
+// --name="容器新名字": 为容器指定一个名称；
+// -d: 后台运行容器，并返回容器ID，也即启动守护式容器；
+// -i：以交互模式运行容器，通常与 -t 同时使用；
+// -t：为容器重新分配一个伪输入终端，通常与 -i 同时使用；
+// -P: 随机端口映射；
+// -p: 指定端口映射，有以下四种格式
+      ip:hostPort:containerPort
+      ip::containerPort
+      hostPort:containerPort
+      containerPort
 docker run [OPTIONS] IMAGE [COMMAND][ARG...]
 ```
 
-
 ```
 // 列出当前所有正在运行的容器
+// -a :列出当前所有正在运行的容器+历史上运行过的
+// -l :显示最近创建的容器。
+// -n：显示最近n个创建的容器。
+// -q :静默模式，只显示容器编号。
+// --no-trunc :不截断输出。
 docker ps [OPTIONS]
 ```
 
-
+```
 // 退出容器
+1. exit 容器停止退出
+2. ctrl+P+Q 容器不停止退出
+```
 
+```
 // 启动容器
+docker start 容器ID或者容器名
+```
 
+```
 // 重启容器
+docker restart 容器ID或者容器名
+```
 
+```
 // 停止容器
+docker stop 容器ID或者容器名
+```
 
+```
 // 强制停止容器
+docker kill 容器ID或者容器名
+```
 
+```
 // 删除已停止容器
+docker rm 容器ID
+// 一次性删除多个容器
+docker rm -f $(docker ps -a -q)
+docker ps -a -q | xargs docker rm
+```
+
+**重要：**
+
+```
+// 启动守护式容器
+docker run -d 容器名
+```
+
+```
+// 查看容器日志
+// -t 是加入时间戳
+// -f 跟随最新的日志打印
+// --tail 数字 显示最后多少条
+docker logs -f -t --tail 容器ID
+```
+
+```
+// 查看容器内运行的进程
+docker top 容器ID
+```
+
+```
+// 查看容器内部细节
+docker inspect 容器ID
+```
 
 
+```
+// 进入正在运行的容器并以命令行交互
+docker exec -it 容器ID bashShell
+
+重新进入docker attach 容器ID
+
+上述两个区别:
+attach 直接进入容器启动命令的终端，不会启动新的进程
+exec 是在容器中打开新的终端，并且可以启动新的进程
+```
 
 
-### 5.4 小总结
+```
+// 从容器内拷贝文件到主机上
+docker cp  容器ID:容器内路径 目的主机路径
+```
+
+## 6. Docker镜像
+### 6.1 是什么？
+#### 1. UnionFS（联合文件系统）
+UnionFS（联合文件系统）：Union文件系统（UnionFS）是一种分层、轻量级并且高性能的文件系统，它支持对文件系统的修改作为一次提交来一层层的叠加，同时可以将不同目录挂载到同一个虚拟文件系统下(unite several directories into a single virtual filesystem)。Union 文件系统是 Docker 镜像的基础。镜像可以通过分层来进行继承，基于基础镜像（没有父镜像），可以制作各种具体的应用镜像。
+
+特性：一次同时加载多个文件系统，但从外面看起来，只能看到一个文件系统，联合加载会把各层文件系统叠加起来，这样最终的文件系统会包含所有底层的文件和目录
+
+#### 2. Docker镜像加载原理
+docker的镜像实际上由一层一层的文件系统组成，这种层级的文件系统UnionFS。
+bootfs(boot file system)主要包含bootloader和kernel, bootloader主要是引导加载kernel, Linux刚启动时会加载bootfs文件系统，在Docker镜像的最底层是bootfs。这一层与我们典型的Linux/Unix系统是一样的，包含boot加载器和内核。当boot加载完成之后整个内核就都在内存中了，此时内存的使用权已由bootfs转交给内核，此时系统也会卸载bootfs。
+
+rootfs (root file system) ，在bootfs之上。包含的就是典型 Linux 系统中的 /dev, /proc, /bin, /etc 等标准目录和文件。rootfs就是各种不同的操作系统发行版，比如Ubuntu，Centos等等。
+
+#### 3. 分层的镜像
+#### 4. 为什么 Docker 镜像要采用这种分层结构呢
+最大的一个好处就是 - 共享资源
+
+比如：有多个镜像都从相同的 base 镜像构建而来，那么宿主机只需在磁盘上保存一份base镜像，
+同时内存中也只需加载一份 base 镜像，就可以为所有容器服务了。而且镜像的每一层都可以被共享。
+
+### 6.2 特点
+Docker镜像都是只读的
+当容器启动时，一个新的可写层被加载到镜像的顶部。
+这一层通常被称作“容器层”，“容器层”之下的都叫“镜像层”。
+
+
+### 6.3 Docker镜像commit操作补充
+docker commit提交容器副本使之成为一个新的镜像
+
+docker commit -m=“提交的描述信息” -a=“作者” 容器ID 要创建的目标镜像名:[标签名]
+
+举例：
+
+```
+1.从Hub上下载tomcat镜像到本地并成功运行
+docker run -it -p 8080:8080 tomcat
+
+2.故意删除上一步镜像生产tomcat容器的文档
+
+3.也即当前的tomcat运行实例是一个没有文档内容的容器，
+以它为模板commit一个没有doc的tomcat新镜像atguigu/tomcat02
+
+4.启动我们的新镜像并和原来的对比
+启动atguigu/tomcat02，它没有docs
+新启动原来的tomcat，它有docs
+```
+
+
+## 7.Dokcer 容器数据卷
+### 7.1 是什么
+先来看看Docker的理念：
+*  将运用与运行的环境打包形成容器运行 ，运行可以伴随着容器，但是我们对数据的要求希望是持久化的
+*  容器之间希望有可能共享数据
+
+
+Docker容器产生的数据，如果不通过docker commit生成新的镜像，使得数据做为镜像的一部分保存下来，
+那么当容器删除后，数据自然也就没有了。
+
+为了能保存数据在docker中我们使用卷。
+
+一句话：有点类似我们Redis里面的rdb和aof文件
+
+
+### 7.2 能干嘛？
+- 容器的持久化
+- 容器间继承+共享数据
+
+### 7.3 数据卷
+容器内添加：
+#### 直接命令添加
+命令： docker run -it -v /宿主机绝对路径目录:/容器内目录      镜像名
+
+查看数据卷是否挂载成功：
+docker inspect 容器ID
+
+容器和宿主机之间数据共享
+
+容器停止退出后，主机修改后数据是否同步
+
+命令(带权限)
+docker run -it -v /宿主机绝对路径目录:/容器内目录:ro 镜像名
+
+#### DockerFile添加
+根目录下新建mydocker文件夹并进入
+
+可在Dockerfile中使用VOLUME指令来给镜像添加一个或多个数据卷
+
+**说明：**
+出于可移植和分享的考虑，用-v 主机目录:容器目录这种方法不能够直接在Dockerfile中实现。
+由于宿主机目录是依赖于特定宿主机的，并不能够保证在所有的宿主机上都存在这样的特定目录。
+
+File构建
+
+build后生成镜像
+
+run容器
+
+通过上述步骤，容器内的卷目录地址已经知道
+对应的主机目录地址哪？？
+
+主机对应默认地址
+
+==主备：==
+Docker挂载主机目录Docker访问出现cannot open directory .: Permission denied
+解决办法：在挂载目录后多加一个--privileged=true参数即可
+
+### 7.4 数据卷容器
+#### 是什么？
+命名的容器挂载数据卷，其它容器通过挂载这个(父容器)实现数据共享，挂载数据卷的容器，称之为数据卷容器。
+
+#### 容器间传递共享(--volimes-from)
+略
+
+## 8.DockerFile 解析
+### 8.1 是什么
+Dockerfile是用来构建Docker镜像的构建文件，是由一系列命令和参数构成的脚本。
+
+**构建三步骤：**
+- 编写Dockerfile文件
+- docker build
+- docker run
+
+### 8.2 DockerFile构建过程解析
+#### 8.2.1 Dockerfile内容基础知识
+- 1：每条保留字指令都必须为大写字母且后面要跟随至少一个参数
+- 2：指令按照从上到下，顺序执行
+- 3：#表示注释
+- 4：每条指令都会创建一个新的镜像层，并对镜像进行提交
+
+#### 8.2.2 Docker执行Dockerfile的大致流程
+- （1）docker从基础镜像运行一个容器
+- （2）执行一条指令并对容器作出修改
+- （3）执行类似docker commit的操作提交一个新的镜像层
+- （4）docker再基于刚提交的镜像运行一个新容器
+- （5）执行dockerfile中的下一条指令直到所有指令都执行完成
+
+#### 8.2.3 小总结
+从应用软件的角度来看，Dockerfile、Docker镜像与Docker容器分别代表软件的三个不同阶段，
+*  Dockerfile是软件的原材料
+*  Docker镜像是软件的交付品
+*  Docker容器则可以认为是软件的运行态。
+   Dockerfile面向开发，Docker镜像成为交付标准，Docker容器则涉及部署与运维，三者缺一不可，合力充当Docker体系的基石。
+
+1 Dockerfile，需要定义一个Dockerfile，Dockerfile定义了进程需要的一切东西。Dockerfile涉及的内容包括执行代码或者是文件、环境变量、依赖包、运行时环境、动态链接库、操作系统的发行版、服务进程和内核进程(当应用进程需要和系统服务和内核进程打交道，这时需要考虑如何设计namespace的权限控制)等等;
+
+2 Docker镜像，在用Dockerfile定义一个文件之后，docker build时会产生一个Docker镜像，当运行 Docker镜像时，会真正开始提供服务;
+
+3 Docker容器，容器是直接提供服务的。
+
+### 8.3 Docker体系结构(保留字指令)
+#### 1.FROM
+基础镜像，当前新镜像是基于哪个镜像的
+
+
+#### 2.MAINTAINER
+镜像维护者的姓名和邮箱地址
+
+#### 3.RUN
+容器构建时需要运行的命令
+
+#### 4.EXPOSE
+当前容器对外暴露出的端口
+
+#### 5.WORKDIR
+指定在创建容器后，终端默认登陆的进来工作目录，一个落脚点
+
+#### 6.ENV
+用来在构建镜像过程中设置环境变量
+
+#### 7.ADD
+将宿主机目录下的文件拷贝进镜像且ADD命令会自动处理URL和解压tar压缩包
+
+#### 8.COPY
+类似ADD，拷贝文件和目录到镜像中。
+将从构建上下文目录中 <源路径> 的文件/目录复制到新的一层的镜像内的 <目标路径> 位置
+
+#### 9.VOLUME
+容器数据卷，用于数据保存和持久化工作
+
+#### 10.CMD
+指定一个容器启动时要运行的命令
+
+
+Dockerfile 中可以有多个 CMD 指令，但只有最后一个生效，CMD 会被 docker run 之后的参数替换
+
+
+#### 11.ENTRYPOINT
+指定一个容器启动时要运行的命令
+
+ENTRYPOINT 的目的和 CMD 一样，都是在指定容器启动程序及参数
+
+#### 12.ONBUILD
+当构建一个被继承的Dockerfile时运行命令，父镜像在被子继承后父镜像的onbuild被触发
+
+
+## 9. Docker常用安装
+### 9.1 总体步骤
+- 搜索镜像
+- 拉取镜像
+- 查看镜像
+- 启动镜像
+- 停止容器
+- 移除容器

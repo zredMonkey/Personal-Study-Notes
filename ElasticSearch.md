@@ -250,6 +250,1050 @@ pri.store.size | 主分片占空间大小
 }
 ```
 
+#### 4.1.3 映射操作
+有了索引库，等于有了数据库中的 database。
+
+接下来就需要建索引库(index)中的映射了，类似于数据库(database)中的表结构(table)。
+
+创建数据库表需要设置字段名称，类型，长度，约束等；索引库也一样，需要知道这个类型下有哪些字段，每个字段有哪些约束信息，这就叫做**映射(mapping)**。
+
+##### 4.1.3.1 创建映射
+向 ES 服务器发 PUT 请求 ：http://127.0.0.1:9200/student/_mapping
+
+请求体内容为：
+
+```
+{
+    "properties": {
+        "name": {
+            "type": "text",
+            "index": true
+        },
+        "sex": {
+            "type": "text",
+            "index": false
+        },
+        "age": {
+            "type": "long",
+            "index": false
+        }
+    }
+}
+```
+服务器响应结果如下：
+
+```
+{
+    "acknowledged": true
+}
+```
+映射数据说明：
+- 字段名：任意填写，下面指定许多属性，例如：title、subtitle、images、price
+- type：类型，Elasticsearch 中支持的数据类型非常丰富，说几个关键的：
+    - String 类型，又分两种：
+        - text：可分词
+        - keyword：不可分词，数据会作为完整字段进行匹配
+    - Numerical：数值类型，分两类
+        - 基本数据类型：long、integer、short、byte、double、float、half_float
+        - 浮点数的高精度类型：scaled_float
+    - Date：日期类型
+    - Array：数组类型
+    - Object：对象
+- index：是否索引，默认为true，也就是说你不进行任何配置，所有字段都会被索引。
+  true：字段会被索引，则可以用来进行搜索
+  false：字段不会被索引，不能用来搜索
+- store：是否将数据进行独立存储，默认为 false原始的文本会存储在_source 里面，默认情况下其他提取出来的字段都不是独立存储的，是从_source里面提取出来的。当然你也可以独立的存储某个字段，只要设置"store":true即可，获取独立存储的字段要比从_source 中解析快得多，但是也会占用更多的空间，所以要根据实际业务需求来设置。
+- analyzer：分词器，这里的 ik_max_word 即使用ik分词器,后面会有专门的章节学习
+
+
+##### 4.1.3.2 查看映射
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_mapping
+
+##### 4.1.3.3 索引映射关联
+向 ES 服务器发 PUT 请求 ：http://127.0.0.1:9200/student1
+
+```
+{
+    "settings": {},
+    "mappings": {
+        "properties": {
+            "name": {
+                "type": "text",
+                "index": true
+            },
+            "sex": {
+                "type": "text",
+                "index": false
+            },
+            "age": {
+                "type": "long",
+                "index": false
+            }
+        }
+    }
+}
+```
+
+#### 4.1.4 高级查询
+Elasticsearch 提供了基于 JSON 提供完整的查询 DSL 来定义查询
+定义数据 :
+
+```
+# POST /student/_doc/1001
+{
+"name":"zhangsan",
+"nickname":"zhangsan",
+ "sex":"男",
+ "age":30
+}
+# POST /student/_doc/1002
+{
+"name":"lisi",
+"nickname":"lisi",
+ "sex":"男",
+ "age":20
+}
+# POST /student/_doc/1003
+{
+"name":"wangwu",
+ "nickname":"wangwu",
+ "sex":"女",
+ "age":40
+}
+# POST /student/_doc/1004
+{
+"name":"zhangsan1",
+"nickname":"zhangsan1",
+ "sex":"女",
+ "age":50
+}
+# POST /student/_doc/1005
+{
+"name":"zhangsan2",
+"nickname":"zhangsan2",
+ "sex":"女",
+ "age":30
+}
+```
+##### 4.1.4.1 查询所有文档
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+ "query": {
+ "match_all": {}
+ }
+}
+# "query"：这里的 query 代表一个查询对象，里面可以有不同的查询属性
+# "match_all"：查询类型，例如：match_all(代表查询所有)， match，term ， range 等等
+# {查询条件}：查询条件会根据类型的不同，写法也有差异
+```
+服务器响应结果如下：
+
+```
+{
+    "took【查询花费时间，单位毫秒】": 1116,
+    "timed_out【是否超时】": false,
+    "_shards【分片信息】": {
+        "total【总数】": 1,
+        "successful【成功】": 1,
+        "skipped【忽略】": 0,
+        "failed【失败】": 0
+    },
+    "hits【搜索命中结果】": {
+        "total"【搜索条件匹配的文档总数】: {
+            "value"【总命中计数的值】: 3,
+            "relation"【计数规则】: "eq" # eq 表示计数准确， gte 表示计数不准确
+        },
+        "max_score【匹配度分值】": 1.0,
+        "hits【命中结果集合】": [
+ 。。。
+        }
+    ]
+}
+}
+```
+##### 4.1.4.2 匹配查询
+match 匹配类型查询，会把查询条件进行分词，然后进行查询，多个词条之间是 or 的关系。
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+ "query": {
+ "match": {
+ "name":"zhangsan"
+ }
+ }
+}
+```
+
+##### 4.1.4.3 字段匹配查询
+multi_match 与 match 类似，不同的是它可以在多个字段中查询。
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+ "query": {
+ "multi_match": {
+ "query": "zhangsan",
+ "fields": ["name","nickname"]
+ }
+ }
+}
+```
+
+##### 4.1.4.4 关键字精确查询
+term 查询，精确的关键词匹配查询，不对查询条件进行分词。
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+ "query": {
+ "term": {
+ "name": {
+ "value": "zhangsan"
+ }
+ }
+ }
+}
+```
+
+##### 4.1.4.5 多关键字精确查询
+terms 查询和 term 查询一样，但它允许你指定多值进行匹配。
+如果这个字段包含了指定值中的任何一个值，那么这个文档满足条件，类似于 mysql 的 in。
+
+向 ES 服务器发 GET 请求：http://127.0.0.1:9200/student/_search
+
+```
+{
+ "query": {
+ "terms": {
+ "name": ["zhangsan","lisi"]
+ }
+ }
+}
+```
+
+##### 4.1.4.6 指定查询字段
+默认情况下，Elasticsearch 在搜索的结果中，会把文档中保存在_source 的所有字段都返回。
+如果我们只想获取其中的部分字段，我们可以添加_source 的过滤.
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+ "_source": ["name","nickname"], 
+ "query": {
+ "terms": {
+ "nickname": ["zhangsan"]
+ }
+ }
+}
+```
+
+##### 4.1.4.7 过滤字段
+我们也可以通过：
+- includes：来指定想要显示的字段
+- excludes：来指定不想要显示的字段
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+ "_source": {
+ "includes": ["name","nickname"]
+ }, 
+ "query": {
+ "terms": {
+ "nickname": ["zhangsan"]
+ }
+ }
+}
+```
+
+##### 4.1.4.8 组合查询
+`bool`把各种其它查询通过`must`（必须）、`must_not`（必须不）、`should`（应该）的方式进行组合。
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "match": {
+                        "name": "zhangsan"
+                    }
+                }
+            ],
+            "must_not": [
+                {
+                    "match": {
+                        "age": "40"
+                    }
+                }
+            ],
+            "should": [
+                {
+                    "match": {
+                        "sex": "男"
+                    }
+                }
+            ]
+        }
+    }
+}
+```
+
+##### 4.1.4.9 范围查询
+range 查询找出那些落在指定区间内的数字或者时间。range 查询允许以下字符
+
+
+操作符 | 说明
+---|---
+gt | 大于>
+gte | 大于等于>=
+lt | 小于<
+lte | 小于等于<=
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+
+```
+{
+    "query": {
+        "range": {
+            "age": {
+                "gte": 30,
+                "lte": 35
+            }
+        }
+    }
+}
+```
+
+##### 4.1.4.10 模糊查询
+返回包含与搜索字词相似的字词的文档。
+编辑距离是将一个术语转换为另一个术语所需的一个字符更改的次数。这些更改可以包括：
+- 更改字符（box → fox）
+- 删除字符（black → lack）
+- 插入字符（sic → sick）
+- 转置两个相邻字符（act → cat）
+  为了找到相似的术语，fuzzy查询会在指定的编辑距离内创建一组搜索词的所有可能的变体或扩展。然后查询返回每个扩展的完全匹配。
+
+通过 fuzziness 修改编辑距离。一般使用默认值AUTO，根据术语的长度生成编辑距离。
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+    "query": {
+        "fuzzy": {
+            "title": {
+                "value": "zhangsan"
+            }
+        }
+    }
+}
+```
+
+##### 4.1.4.11 单字段排序
+sort 可以让我们按照不同的字段进行排序，并且通过 order 指定排序的方式。desc 降序，asc升序。
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+    "query": {
+        "match": {
+            "name": "zhangsan"
+        }
+    },
+    "sort": [
+        {
+            "age": {
+                "order": "desc"
+            }
+        }
+    ]
+}
+```
+
+##### 4.1.4.12 多字段排序
+假定我们想要结合使用age和_score进行查询，并且匹配的结果首先按照年龄排序，然后按照相关性得分排序。
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+```
+{
+    "query": {
+        "match_all": {}
+    },
+    "sort": [
+        {
+            "age": {
+                "order": "desc"
+            }
+        },
+        {
+            "_score": {
+                "order": "desc"
+            }
+        }
+    ]
+}
+```
+
+##### 4.1.4.13 高亮查询
+在进行关键字搜索时，搜索出的内容中的关键字会显示不同的颜色，称之为高亮。
+![image](.img/es_高亮示例.png)
+Elasticsearch 可以对查询内容中的关键字部分，进行标签和样式(高亮)的设置。
+
+在使用 match 查询的同时，加上一个 highlight 属性：
+- pre_tags：前置标签
+- post_tags：后置标签
+- fields：需要高亮的字段
+- title：这里声明 title
+
+字段需要高亮，后面可以为这个字段设置特有配置，也可以空。
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+```
+{
+    "query": {
+        "match": {
+            "name": "zhangsan"
+        }
+    },
+    "highlight": {
+        "pre_tags": "<font color='red'>",
+        "post_tags": "</font>",
+        "fields": {
+            "name": {}
+        }
+    }
+}
+```
+
+##### 4.1.4.14 分页查询
+from：当前页的起始索引，默认从 0 开始。 from = (pageNum - 1) * size
+size：每页显示多少条。
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+```
+{
+    "query": {
+        "match_all": {}
+    },
+    "sort": [
+        {
+            "age": {
+                "order": "desc"
+            }
+        }
+    ],
+    "from": 0,
+    "size": 2
+}
+```
+
+##### 4.1.4.15 聚合查询
+聚合允许使用者对 es 文档进行统计分析，类似与关系型数据库中的 group by，当然还有很多其他的聚合，例如取最大值、平均值等等。
+###### 对某个字段取最大值 max
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+    "aggs": {
+        "max_age": {
+            "max": {
+                "field": "age"
+            }
+        }
+    },
+    "size": 0
+}
+```
+
+###### 对某个字段取最小值 min
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+ "aggs":{
+ "min_age":{
+ "min":{"field":"age"}
+ }
+ },
+ "size":0
+}
+```
+
+###### 对某个字段求和 sum
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+ "aggs":{
+ "sum_age":{
+ "sum":{"field":"age"}
+ }
+ },
+ "size":0
+}
+```
+
+###### 对某个字段取平均值 avg
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+ "aggs":{
+ "avg_age":{
+ "avg":{"field":"age"}
+ }
+ },
+ "size":0
+}
+```
+
+###### 对某个字段的值进行去重之后再取总数
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+ "aggs":{
+ "distinct_age":{
+ "cardinality":{"field":"age"}
+ }
+ },
+ "size":0
+}
+```
+
+###### State 聚合
+stats 聚合，对某个字段一次性返回 count，max，min，avg 和 sum 五个指标。
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+```
+{
+ "aggs":{
+ "stats_age":{
+ "stats":{"field":"age"}
+ }
+ },
+ "size":0
+}
+```
+
+###### 桶聚合查询
+桶聚和相当于 sql 中的 group by 语句。
+
+**terms 聚合，分组统计：**
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+
+```
+{
+ "aggs":{
+ "age_groupby":{
+ "terms":{"field":"age"}
+ }
+ },
+ "size":0
+}
+```
+
+**在 terms 分组下再进行聚合：**
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/student/_search
+
+
+```
+{
+ "aggs":{
+ "age_groupby":{
+ "terms":{"field":"age"}
+ }
+ },
+ "size":0
+}
+```
+
+### 4.2 Java API 操作
+Elasticsearch 软件是由 Java 语言开发的，所以也可以通过 Java API 的方式对 Elasticsearch服务进行访问。
+
+==注意：具体代码在另一个ESLearn的仓库中。==
+
+#### 4.2.1 索引
+ES 服务器正常启动后，可以通过 Java API 客户端对象对 ES 索引进行操作。
+##### 4.2.1.1 创建索引
+
+```
+// 创建索引 - 请求对象
+CreateIndexRequest request = new CreateIndexRequest("user");
+// 发送请求，获取响应
+CreateIndexResponse response = client.indices().create(request, 
+RequestOptions.DEFAULT);
+boolean acknowledged = response.isAcknowledged();
+// 响应状态
+System.out.println("操作状态 = " + acknowledged);
+```
+
+##### 4.2.1.2 查看索引
+
+```
+// 查询索引 - 请求对象
+GetIndexRequest request = new GetIndexRequest("user");
+// 发送请求，获取响应
+GetIndexResponse response = client.indices().get(request, 
+RequestOptions.DEFAULT);
+System.out.println("aliases:"+response.getAliases());
+System.out.println("mappings:"+response.getMappings());
+System.out.println("settings:"+response.getSettings());
+```
+
+##### 4.2.1.3 删除索引
+
+```
+// 删除索引 - 请求对象
+DeleteIndexRequest request = new DeleteIndexRequest("user");
+// 发送请求，获取响应
+AcknowledgedResponse response = client.indices().delete(request, 
+RequestOptions.DEFAULT);
+// 操作结果
+System.out.println("操作结果 ： " + response.isAcknowledged());
+```
+
+#### 4.2.2 文档
+##### 4.2.2.1 新增文档
+创建数据模型
+
+```
+public class User {
+    private String name;
+    private String sex;
+    private Integer age;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+}
+```
+创建数据，添加到文档中
+```
+// 新增文档 - 请求对象
+IndexRequest request = new IndexRequest();
+// 设置索引及唯一性标识
+request.index("user").id("1001");
+// 创建数据对象
+User user = new User();
+user.setName("zhangsan");
+user.setAge(30);
+user.setSex("男");
+ObjectMapper objectMapper = new ObjectMapper();
+String productJson = objectMapper.writeValueAsString(user);
+// 添加文档数据，数据格式为 JSON 格式
+request.source(productJson,XContentType.JSON);
+// 客户端发送请求，获取响应对象
+IndexResponse response = client.index(request, RequestOptions.DEFAULT);
+////3.打印结果信息
+System.out.println("_index:" + response.getIndex());
+System.out.println("_id:" + response.getId());
+System.out.println("_result:" + response.getResult()); 
+```
+
+##### 4.2.2.2 修改文档
+```
+// 修改文档 - 请求对象
+UpdateRequest request = new UpdateRequest();
+// 配置修改参数
+request.index("user").id("1001");
+// 设置请求体，对数据进行修改
+request.doc(XContentType.JSON, "sex", "女");
+// 客户端发送请求，获取响应对象
+UpdateResponse response = client.update(request, RequestOptions.DEFAULT);
+System.out.println("_index:" + response.getIndex());
+System.out.println("_id:" + response.getId());
+System.out.println("_result:" + response.getResult());
+```
+
+##### 4.2.2.3 查询文档
+```
+//1.创建请求对象
+GetRequest request = new GetRequest().index("user").id("1001");
+//2.客户端发送请求，获取响应对象
+GetResponse response = client.get(request, RequestOptions.DEFAULT);
+////3.打印结果信息
+System.out.println("_index:" + response.getIndex());
+System.out.println("_type:" + response.getType());
+System.out.println("_id:" + response.getId());
+System.out.println("source:" + response.getSourceAsString());
+```
+
+##### 4.2.2.4 删除文档
+```
+//创建请求对象
+DeleteRequest request = new DeleteRequest().index("user").id("1");
+//客户端发送请求，获取响应对象
+DeleteResponse response = client.delete(request, RequestOptions.DEFAULT);
+//打印信息
+System.out.println(response.toString());
+```
+
+##### 4.2.2.5 批量操作
+```
+//创建批量新增请求对象
+BulkRequest request = new BulkRequest();
+request.add(new 
+IndexRequest().index("user").id("1001").source(XContentType.JSON, "name", 
+"zhangsan"));
+request.add(new 
+IndexRequest().index("user").id("1002").source(XContentType.JSON, "name", 
+"lisi"));
+request.add(new 
+IndexRequest().index("user").id("1003").source(XContentType.JSON, "name", 
+"wangwu"));
+//客户端发送请求，获取响应对象
+BulkResponse responses = client.bulk(request, RequestOptions.DEFAULT);
+//打印结果信息
+System.out.println("took:" + responses.getTook());
+System.out.println("items:" + responses.getItems());
+```
+
+##### 4.2.2.6 批量删除
+```
+//创建批量删除请求对象
+BulkRequest request = new BulkRequest();
+request.add(new DeleteRequest().index("user").id("1001"));
+request.add(new DeleteRequest().index("user").id("1002"));
+request.add(new DeleteRequest().index("user").id("1003"));
+//客户端发送请求，获取响应对象
+BulkResponse responses = client.bulk(request, RequestOptions.DEFAULT);
+//打印结果信息
+System.out.println("took:" + responses.getTook());
+System.out.println("items:" + responses.getItems());
+```
+
+#### 4.2.3 高级查询
+##### 4.2.3.1 请求体查询
+###### 查询所有索引数据
+```
+// 创建搜索请求对象
+SearchRequest request = new SearchRequest();
+request.indices("student");
+// 构建查询的请求体
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+// 查询所有数据
+sourceBuilder.query(QueryBuilders.matchAllQuery());
+request.source(sourceBuilder);
+SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+// 查询匹配
+SearchHits hits = response.getHits();
+System.out.println("took:" + response.getTook());
+System.out.println("timeout:" + response.isTimedOut());
+System.out.println("total:" + hits.getTotalHits());
+System.out.println("MaxScore:" + hits.getMaxScore());
+System.out.println("hits========>>");
+for (SearchHit hit : hits) {
+//输出每条查询的结果信息
+System.out.println(hit.getSourceAsString());
+}
+System.out.println("<<========");
+```
+
+###### term 查询，查询条件为关键字
+
+```
+// 创建搜索请求对象
+SearchRequest request = new SearchRequest();
+request.indices("student");
+// 构建查询的请求体
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+sourceBuilder.query(QueryBuilders.termQuery("age", "30"));
+request.source(sourceBuilder);
+SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+// 查询匹配
+SearchHits hits = response.getHits();
+System.out.println("took:" + response.getTook());
+System.out.println("timeout:" + response.isTimedOut());
+System.out.println("total:" + hits.getTotalHits());
+System.out.println("MaxScore:" + hits.getMaxScore());
+System.out.println("hits========>>");
+for (SearchHit hit : hits) {
+//输出每条查询的结果信息
+System.out.println(hit.getSourceAsString());
+}
+System.out.println("<<========");
+```
+
+###### 分页查询
+```
+// 创建搜索请求对象
+SearchRequest request = new SearchRequest();
+request.indices("student");
+// 构建查询的请求体
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+sourceBuilder.query(QueryBuilders.matchAllQuery());
+// 分页查询
+// 当前页其实索引(第一条数据的顺序号)，from
+sourceBuilder.from(0);
+// 每页显示多少条 size
+sourceBuilder.size(2);
+request.source(sourceBuilder);
+SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+// 查询匹配
+SearchHits hits = response.getHits();
+System.out.println("took:" + response.getTook());
+System.out.println("timeout:" + response.isTimedOut());
+System.out.println("total:" + hits.getTotalHits());
+System.out.println("MaxScore:" + hits.getMaxScore());
+System.out.println("hits========>>");
+for (SearchHit hit : hits) {
+//输出每条查询的结果信息
+System.out.println(hit.getSourceAsString());
+}
+System.out.println("<<========");
+```
+
+###### 数据排序
+```
+// 构建查询的请求体
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+sourceBuilder.query(QueryBuilders.matchAllQuery());
+// 排序
+sourceBuilder.sort("age", SortOrder.ASC);
+request.source(sourceBuilder);
+SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+// 查询匹配
+SearchHits hits = response.getHits();
+System.out.println("took:" + response.getTook());
+System.out.println("timeout:" + response.isTimedOut());
+System.out.println("total:" + hits.getTotalHits());
+System.out.println("MaxScore:" + hits.getMaxScore());
+System.out.println("hits========>>");
+for (SearchHit hit : hits) {
+//输出每条查询的结果信息
+System.out.println(hit.getSourceAsString());
+}
+System.out.println("<<========");
+```
+
+###### 过滤字段
+
+```
+// 创建搜索请求对象
+SearchRequest request = new SearchRequest();
+request.indices("student");
+// 构建查询的请求体
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+sourceBuilder.query(QueryBuilders.matchAllQuery());
+//查询字段过滤
+String[] excludes = {};
+String[] includes = {"name", "age"};
+sourceBuilder.fetchSource(includes, excludes);
+request.source(sourceBuilder);
+SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+// 查询匹配
+SearchHits hits = response.getHits();
+System.out.println("took:" + response.getTook());
+System.out.println("timeout:" + response.isTimedOut());
+System.out.println("total:" + hits.getTotalHits());
+System.out.println("MaxScore:" + hits.getMaxScore());
+System.out.println("hits========>>");
+for (SearchHit hit : hits) {
+//输出每条查询的结果信息
+System.out.println(hit.getSourceAsString());
+}
+System.out.println("<<========");
+```
+
+###### Bool 查询
+
+```
+// 创建搜索请求对象
+SearchRequest request = new SearchRequest();
+request.indices("student");
+// 构建查询的请求体
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+// 必须包含
+boolQueryBuilder.must(QueryBuilders.matchQuery("age", "30"));
+// 一定不含
+boolQueryBuilder.mustNot(QueryBuilders.matchQuery("name", "zhangsan"));
+// 可能包含
+boolQueryBuilder.should(QueryBuilders.matchQuery("sex", "男"));
+sourceBuilder.query(boolQueryBuilder);
+request.source(sourceBuilder);
+SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+// 查询匹配
+SearchHits hits = response.getHits();
+System.out.println("took:" + response.getTook());
+System.out.println("timeout:" + response.isTimedOut());
+System.out.println("total:" + hits.getTotalHits());
+System.out.println("MaxScore:" + hits.getMaxScore());
+System.out.println("hits========>>");
+for (SearchHit hit : hits) {
+//输出每条查询的结果信息
+System.out.println(hit.getSourceAsString());
+}
+System.out.println("<<========");
+```
+
+###### 范围查询
+
+```
+// 创建搜索请求对象
+SearchRequest request = new SearchRequest();
+request.indices("student");
+// 构建查询的请求体
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("age");
+// 大于等于
+rangeQuery.gte("30");
+// 小于等于
+rangeQuery.lte("40");
+sourceBuilder.query(rangeQuery);
+request.source(sourceBuilder);
+SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+// 查询匹配
+SearchHits hits = response.getHits();
+System.out.println("took:" + response.getTook());
+System.out.println("timeout:" + response.isTimedOut());
+System.out.println("total:" + hits.getTotalHits());
+System.out.println("MaxScore:" + hits.getMaxScore());
+System.out.println("hits========>>");
+for (SearchHit hit : hits) {
+//输出每条查询的结果信息
+System.out.println(hit.getSourceAsString());
+}
+System.out.println("<<========");
+```
+
+###### 模糊查询
+
+```
+// 创建搜索请求对象
+SearchRequest request = new SearchRequest();
+request.indices("student");
+// 构建查询的请求体
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+sourceBuilder.query(QueryBuilders.fuzzyQuery("name","zhangsan").fuzziness(Fuzziness.ONE));
+request.source(sourceBuilder);
+SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+// 查询匹配
+SearchHits hits = response.getHits();
+System.out.println("took:" + response.getTook());
+System.out.println("timeout:" + response.isTimedOut());
+System.out.println("total:" + hits.getTotalHits());
+System.out.println("MaxScore:" + hits.getMaxScore());
+System.out.println("hits========>>");
+for (SearchHit hit : hits) {
+//输出每条查询的结果信息
+System.out.println(hit.getSourceAsString());
+}
+System.out.println("<<========");
+```
+
+###### 高亮查询
+
+```
+// 高亮查询
+SearchRequest request = new SearchRequest().indices("student");
+//2.创建查询请求体构建器
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+//构建查询方式：高亮查询
+TermsQueryBuilder termsQueryBuilder = 
+QueryBuilders.termsQuery("name","zhangsan");
+//设置查询方式
+sourceBuilder.query(termsQueryBuilder);
+//构建高亮字段
+HighlightBuilder highlightBuilder = new HighlightBuilder();
+highlightBuilder.preTags("<font color='red'>");//设置标签前缀
+highlightBuilder.postTags("</font>");//设置标签后缀
+highlightBuilder.field("name");//设置高亮字段
+//设置高亮构建对象
+sourceBuilder.highlighter(highlightBuilder);
+//设置请求体
+request.source(sourceBuilder);
+//3.客户端发送请求，获取响应对象
+SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+//4.打印响应结果
+SearchHits hits = response.getHits();
+System.out.println("took::"+response.getTook());
+System.out.println("time_out::"+response.isTimedOut());
+System.out.println("total::"+hits.getTotalHits());
+System.out.println("max_score::"+hits.getMaxScore());
+System.out.println("hits::::>>");
+for (SearchHit hit : hits) {
+String sourceAsString = hit.getSourceAsString();
+System.out.println(sourceAsString);
+//打印高亮结果
+Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+System.out.println(highlightFields);
+}
+System.out.println("<<::::");
+```
+
+###### 聚合查询
+- 最大年龄
+
+```
+// 高亮查询
+SearchRequest request = new SearchRequest().indices("student");
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+sourceBuilder.aggregation(AggregationBuilders.max("maxAge").field("age"));
+//设置请求体
+request.source(sourceBuilder);
+//3.客户端发送请求，获取响应对象
+SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+//4.打印响应结果
+SearchHits hits = response.getHits();
+System.out.println(response);
+```
+
+- 分组统计
+```
+// 高亮查询
+SearchRequest request = new SearchRequest().indices("student");
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+sourceBuilder.aggregation(AggregationBuilders.terms("age_groupby").field("age"));
+//设置请求体
+request.source(sourceBuilder);
+//3.客户端发送请求，获取响应对象
+SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+//4.打印响应结果
+SearchHits hits = response.getHits();
+System.out.println(response);
+```
+
+
+
+
+
 
 
 

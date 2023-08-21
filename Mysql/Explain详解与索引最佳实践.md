@@ -48,7 +48,7 @@
 mysql> explain select * from actor;
 ```
 
-![image.png](WEBRESOURCE37c9d2891740a56f83d038d5095f8be1)
+![image](../.img/mysql_explain1.png)
 在查询中的每个表会输出一行，如果有两个表通过 join 连接查询，那么会输出两行。
 
 **explain 两个变种**
@@ -57,12 +57,12 @@ mysql> explain select * from actor;
 ```
 1 mysql> explain extended select * from film where id = 1;
 ```
-![image.png](WEBRESOURCEb130861774e37a3501ffcc1741df5111)
+![image](../.img/mysql_explain2.png)
 
 ```
 1 mysql> show warnings;
 ```
-![image.png](WEBRESOURCEda93b0d61c9a0eeb8d060cc73bcef1cd)
+![image](../.img/mysql_explain3.png)
 
 
 **2）explain partitions**：相比 explain 多了个 partitions字段，如果查询是基于分区表
@@ -85,7 +85,7 @@ select_type 表示对应行是简单还是复杂的查询。
 ```
 1 mysql> explain select * from film where id = 2;
 ```
-![image.png](WEBRESOURCE2eca5ce26f741cd11e264d2ee6901dd7)
+![image](../.img/mysql_explain4.png)
 2）primary：复杂查询中最外层的 select。
 3）subquery：包含在 select 中的子查询（不在 from 子句中）。
 4）derived：衍生查询。包含在 from 子句中的子查询。MySQL会将结果存放在一个临时表中，也称为派生表（derived的英文含义）。
@@ -98,7 +98,7 @@ select_type 表示对应行是简单还是复杂的查询。
 2 mysql> explain select (select 1 from actor where id = 1) from (select * from film where
 id = 1) der;
 ```
-![image.png](WEBRESOURCE7ee07033ce361346479e98439de23af6)
+![image](../.img/mysql_explain5.png)
 
 
 ```
@@ -109,7 +109,7 @@ id = 1) der;
 ```
 1 mysql> explain select 1 union all select 1;
 ```
-![image.png](WEBRESOURCE2c379cd2c3fbc9fd19f92d21702ac758)
+![image](../.img/mysql_explain6.png)
 
 **3. table列**
 这一列表示 explain 的一行正在访问哪个表。
@@ -125,57 +125,57 @@ id = 1) der;
 ```
 1 mysql> explain select min(id) from film;
 ```
-![image.png](WEBRESOURCE526bbeec87cf42906bbdfbf821d11de7)
+![image](../.img/mysql_explain7.png)
 
 **const, system**：mysql能对查询的某部分进行优化并将其转化成一个常量（可以看show warnings 的结果）。const通俗点就是说和查询一个常量一样很快。用于primary key 或 unique key 的所有列与常数比较时，所以表最多有一个匹配行，读取1次，速度比较快。**system是const的特例**，表里只有一条元组匹配时为system。
 ```
 1 mysql> explain extended select * from (select * from film where id = 1) tmp;
 ```
-![image.png](WEBRESOURCEcc274db7d27936315321bd9c3df960ea)
+![image](../.img/mysql_explain8.png)
 ```
 1 mysql> show warnings;
 ```
-![image.png](WEBRESOURCE4eedfba49a357f4d8b60b9c655e4d42f)
+![image](../.img/mysql_explain9.png)
 
 **eq_ref**：primary key(主键) 或 unique key(唯一键) 索引的所有部分被连接使用 ，最多只会返回一条符合条件的记录。这可能是在const 之外最好的联接类型了，简单的 select 查询不会出现这种 type。如下：
 ```
 1 mysql> explain select * from film_actor left join film on film_actor.film_id = film.id;
 ```
-![image.png](WEBRESOURCEb638984faff383630fd9d2d50b72f780)
+![image](../.img/mysql_explain10.png)
 
 **ref**：相比 eq_ref，不使用唯一索引，而是使用普通索引或者唯一性索引的部分前缀，索引要和某个值相比较，可能会找到多个符合条件的行。
 1. 简单 select 查询，name是普通索引（非唯一索引）
 ```
 1 mysql> explain select * from film where name = 'film1';
 ```
-![image.png](WEBRESOURCE73217c23fca6850085ac707010963f74)
+![image](../.img/mysql_explain11.png)
 
 2.关联表查询，idx_film_actor_id是film_id和actor_id的联合索引，这里使用到了film_actor的左边前缀film_id部分。如下：
 ```
 1 mysql> explain select film_id from film left join film_actor on film.id = film_actor.film_id;
 ```
-![image.png](WEBRESOURCEeeaca6d4b542fdf3c052155eac409f53)
+![image](../.img/mysql_explain12.png)
 
 **range**：范围扫描通常出现在 in(), between ,> ,<, >= 等操作中。使用一个索引来检索给定范围的行。
 
 ```
 1 mysql> explain select * from actor where id > 1;
 ```
-![image.png](WEBRESOURCE8853306484bf00981d4b5c24317126a8)
+![image](../.img/mysql_explain13.png)
 
 
 **index**：扫描全索引就能拿到结果，一般是扫描某个二级索引，这种扫描不会从索引树根节点开始快速查找，而是直接对二级索引的叶子节点遍历和扫描，速度还是比较慢的，这种查询一般为使用覆盖索引，二级索引一般比较小，所以这种通常比ALL快一些。如下：
 ```
 1 mysql> explain select * from film;
 ```
-![image.png](WEBRESOURCE75172399942a75c119bdb38e5df63fe5)
+![image](../.img/mysql_explain14.png)
 
 
 **ALL**：即全表扫描，扫描你的聚簇索引的所有叶子节点。**通常情况下这需要增加索引来进行优化了**。如下：
 ```
 1 mysql> explain select * from actor;
 ```
-![image.png](WEBRESOURCEc873d9aeff31927ead2a3afe402bb479)
+![image](../.img/mysql_explain15.png)
 
 **5. possible_keys列**
 这一列显示查询**可能使用**哪些索引来查找。
@@ -197,7 +197,7 @@ explain 时可能出现 possible_keys 有列，而 key 显示 NULL 的情况，�
 ```
 1 mysql> explain select * from film_actor where film_id = 2;
 ```
-![image.png](WEBRESOURCE48809d9c3ebc347766bf93269ebf1661)
+![image](../.img/mysql_explain16.png)
 **key_len计算规则如下：**
 - 字符串，char(n)和varchar(n)，5.0.3以后版本中，**n均代表字符数，而不是字节数**，如果是utf-8，一个数字或字母占1个字节，一个汉字占3个字节。
   -  char(n)：如果存汉字长度就是 3n 字节。
@@ -232,19 +232,19 @@ varchar是变长字符串。
 ```
 1 mysql> explain select film_id from film_actor where film_id = 1;
 ```
-![image.png](WEBRESOURCE7d5cea43c907dcf9539697879c8abbd8)
+![image](../.img/mysql_explain17.png)
 
 **2）Using where**：使用 where 语句来处理结果，并且查询的列未被索引覆盖。
 ```
 1 mysql> explain select * from film_actor where film_id > 1;
 ```
-![image.png](WEBRESOURCE8663b6979961721ce2e43f235373ecd7)
+![image](../.img/mysql_explain18.png)
 
 **3）Using index condition**：查询的列不完全被索引覆盖，where条件中是一个前导列的范围。
 ```
 1 mysql> explain select * from film_actor where film_id > 1;
 ```
-![image.png](WEBRESOURCE6bda6d79dbb35d60d1f8c48e33b4c1cb)
+![image](../.img/mysql_explain19.png)
 
 
 **4）Using temporary**：mysql需要创建一张临时表来处理查询。出现这种情况一般是要进行优化的，首先是想到用索引来优化。
@@ -253,13 +253,13 @@ varchar是变长字符串。
 ```
 1 mysql> explain select distinct name from actor;
 ```
-![image.png](WEBRESOURCE3a1d245394c4f594807df6ccdd008c91)
+![image](../.img/mysql_explain20.png)
 
 2. film.name建立了idx_name索引，此时查询时extra是using index,没有用临时表。
 ```
 1 mysql> explain select distinct name from film;
 ```
-![image.png](WEBRESOURCE8aa51d9893ad5c28a0b94362cfff206b)
+![image](../.img/mysql_explain21.png)
 
 **5）Using filesort**：将用外部排序而不是索引排序，数据较小时从内存排序，否则需要在磁盘完成排序。这种情况下一般也是要考虑使用索引来优化的。
 
@@ -267,19 +267,19 @@ varchar是变长字符串。
 ```
 1 mysql> explain select * from actor order by name;
 ```
-![image.png](WEBRESOURCEe1c51fa3841e5ded9ed6d166f1e65c8e)
+![image](../.img/mysql_explain22.png)
 
 2. film.name建立了idx_name索引,此时查询时extra是using index。
 ```
 1 mysql> explain select * from film order by name;
 ```
-![image.png](WEBRESOURCE7768741b7b90e3a66aa425ecc6e3afb3)
+![image](../.img/mysql_explain23.png)
 
 **6）Select tables optimized away**：使用某些聚合函数（比如 max、min）来访问存在索引的某个字段时。
 ```
 1 mysql> explain select min(id) from film;
 ```
-![image.png](WEBRESOURCE000e9194313a142f7a83d64c4fdf98c6)
+![image](../.img/mysql_explain24.png)
 
 
 ### **索引最佳实践**
@@ -306,17 +306,17 @@ varchar是变长字符串。
 ```
 1 EXPLAIN SELECT * FROM employees WHERE name= 'LiLei';
 ```
-![image.png](WEBRESOURCE5ed6850299e3ef79ece0e92272dc5f84)
+![image](../.img/mysql_explain25.png)
 
 ```
 1 EXPLAIN SELECT * FROM employees WHERE name= 'LiLei' AND age = 22;
 ```
-![image.png](WEBRESOURCE93e4bd155812ede8f3172e4467628357)
+![image](../.img/mysql_explain26.png)
 
 ```
 1 EXPLAIN SELECT * FROM employees WHERE name= 'LiLei' AND age = 22 AND position ='manager';
 ```
-![image.png](WEBRESOURCE960409a383dd4951e4380b10ab716cf7)
+![image](../.img/mysql_explain27.png)
 
 **2.最左前缀法则**
 如果索引了多列，要遵守最左前缀法则。指的是查询从索引的最左前列开始并且不跳过索引中的列。
@@ -325,7 +325,7 @@ varchar是变长字符串。
 2 EXPLAIN SELECT * FROM employees WHERE age = 30 AND position = 'dev';
 3 EXPLAIN SELECT * FROM employees WHERE position = 'manager';
 ```
-![image.png](WEBRESOURCEc96438987b4240a128fdf3abd29a3010)
+![image](../.img/mysql_explain28.png)
 
 **3.不在索引列上做任何操作（计算、函数、（自动or手动）类型转换），会导致索引失效而转向全表扫描**
 ```
@@ -337,18 +337,18 @@ varchar是变长字符串。
 <2>.Why聚合函数索引列不能走索引?
 答：聚合函数改变了这个列的值，不能在索引树里匹配上，所以不能走索引了。
 
-![image.png](WEBRESOURCEd0d598813b6fd71808ea96a0dbfd9151)
+![image](../.img/mysql_explain29.png)
 给hire_time增加一个普通索引：
 ```
 1 ALTER TABLE `employees` ADD INDEX `idx_hire_time` (`hire_time`) USING BTREE ;
 1 EXPLAIN select * from employees where date(hire_time) ='2018‐09‐30';
 ```
-![image.png](WEBRESOURCE0b064d29b0568a2d452036c576afd8fc)
+![image](../.img/mysql_explain30.png)
 转化为日期范围查询，有可能会走索引：
 ```
 1 EXPLAIN select * from employees where hire_time >='2018‐09‐30 00:00:00' and hire_time <='2018‐09‐30 23:59:59';
 ```
-![image.png](WEBRESOURCEac514ca1a86b6cde38bb9d666ae029d3)
+![image](../.img/mysql_explain31.png)
 还原最初索引状态
 ```
 1 ALTER TABLE `employees` DROP INDEX `idx_hire_time`;
@@ -363,7 +363,7 @@ r';
 2 EXPLAIN SELECT * FROM employees WHERE name= 'LiLei' AND age > 22 AND position ='manage
 r';
 ```
-![image.png](WEBRESOURCEe6cf23beae7e87e96fa92d2a04d1afb4)
+![image](../.img/mysql_explain32.png)
 **现象解释**：第2个sql语句name和age走了索引，position没有走索引。
 为什么？
 答：联合索引中，在此语句中，name列的值是确定的，age是范围查询，按索引树的有序性可以得知是可以走索引了，但是此时age字段不相等，不能保证position的有序性，所以不走索引。
@@ -372,12 +372,12 @@ r';
 ```
 1 EXPLAIN SELECT name,age FROM employees WHERE name= 'LiLei' AND age = 23 AND position ='manager';
 ```
-![image.png](WEBRESOURCE7d653fa56cc3982f29b317868d01431e)
+![image](../.img/mysql_explain33.png)
 
 ```
 1 EXPLAIN SELECT * FROM employees WHERE name= 'LiLei' AND age = 23 AND position ='manager';
 ```
-![image.png](WEBRESOURCE262066588923aba6c570ab8616b7b3a9)
+![image](../.img/mysql_explain34.png)
 
 **6.mysql在使用不等于（！=或者<>），not in ，not exists 的时候无法使用索引会导致全表扫描**
 < 小于、> 大于、<=、>= 这些，mysql内部优化器会根据检索比例、表大小等多个因素整体评估是否使用索引。
@@ -385,32 +385,32 @@ r';
 ```
 1 EXPLAIN SELECT * FROM employees WHERE name != 'LiLei';
 ```
-![image.png](WEBRESOURCEa91311fbc68947c9ad86a9fadd60a76d)
+![image](../.img/mysql_explain35.png)
 
 **7. is null,is not null 一般情况下也无法使用索引**
 ```
 1 EXPLAIN SELECT * FROM employees WHERE name is null
 ```
-![image.png](WEBRESOURCE2f64960d9e439321ae7018f5a462bb59)
+![image](../.img/mysql_explain36.png)
 
 **8. like以通配符开头（'$abc...'）mysql索引失效会变成全表扫描操作**
 ```
 1 EXPLAIN SELECT * FROM employees WHERE name like '%Lei'
 ```
-![image.png](WEBRESOURCEab79e0f4f093dd6c3f65b1e9aeee83a8)
+![image](../.img/mysql_explain37.png)
 上图没有走索引。
 
 ```
 1 EXPLAIN SELECT * FROM employees WHERE name like 'Lei%'
 ```
-![image.png](WEBRESOURCEcb23aaf9f47218b72bd1c16973264da0)
+![image](../.img/mysql_explain38.png)
 
 **问题**：解决like'%字符串%'索引不被使用的方法？
 a）使用覆盖索引，查询字段必须是建立覆盖索引字段
 ```
 1 EXPLAIN SELECT name,age,position FROM employees WHERE name like '%Lei%';
 ```
-![image.png](WEBRESOURCEca756af51a31fe808709737ee2d9b6a5)
+![image](../.img/mysql_explain39.png)
 查询字段少一点，最好是索引树内的。
 
 b）如果不能使用覆盖索引则可能需要借助搜索引擎
@@ -420,21 +420,21 @@ b）如果不能使用覆盖索引则可能需要借助搜索引擎
 1 EXPLAIN SELECT * FROM employees WHERE name = '1000';
 2 EXPLAIN SELECT * FROM employees WHERE name = 1000;
 ```
-![image.png](WEBRESOURCEbecdb6acfe1378a545a6d03fdcd4ea26)
+![image](../.img/mysql_explain40.png)
 备注：被比较字段和要比较的值的类型最好相同。
 
 **10.少用or或in，用它查询时，mysql不一定使用索引，mysql内部优化器会根据检索比例、表大小等多个因素整体评估是否使用索引，详见范围查询优化**
 ```
 1 EXPLAIN SELECT * FROM employees WHERE name = 'LiLei' or name = 'HanMeimei';
 ```
-![image.png](WEBRESOURCE4c436a50316f82b03d86225fe11eddfd)
+![image](../.img/mysql_explain41.png)
 
 **11.范围查询优化给年龄添加单值索引**
 ```
 1 ALTER TABLE `employees` ADD INDEX `idx_age` (`age`) USING BTREE ;
 1 explain select * from employees where age >=1 and age <=2000;
 ```
-![image.png](WEBRESOURCEdf6b3376b0a6aa3d075ab4c4932bd744)
+![image](../.img/mysql_explain42.png)
 **没走索引原因**：mysql内部优化器会根据检索比例、表大小等多个因素整体评估是否使用索引。比如这个例子，可能是由于单次数据量查询过大导致优化器最终选择不走索引。
 **优化方法**：可以将大的范围拆分成多个小范围。
 
@@ -442,14 +442,14 @@ b）如果不能使用覆盖索引则可能需要借助搜索引擎
 1 explain select * from employees where age >=1 and age <=1000;
 2 explain select * from employees where age >=1001 and age <=2000;
 ```
-![image.png](WEBRESOURCEfb6fe1b413729f7005169122b2bc9f50)
+![image](../.img/mysql_explain43.png)
 还原最初索引状态
 ```
 1 ALTER TABLE `employees` DROP INDEX `idx_age`;
 ```
 
 **索引使用总结**：
-![image.png](WEBRESOURCE7cea7dd857efad28282f2d703b6f77ed)
+![image](../.img/mysql_explain44.png)
 like KK%相当于=常量，%KK和%KK% 相当于范围
 
 ```

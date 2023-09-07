@@ -60,6 +60,12 @@
 **补充：**
 30. SpringBoot是怎么实现配置的自动注入的？
 
+31. springboot中AOP怎么使用?
+
+32. springboot依赖循环怎么解决？
+
+33. 怎么实现springboot中注入的时候，先加载a,再加载b,再加载c,顺序加载？
+
 这些只是可能的问题之一，实际的面试内容可能根据面试官和职位的要求而有所不同。在准备面试时，建议你深入了解每个主题，从基础到高级都做好准备，以便能够回答各种层次的问题。同时，通过实际项目经验和练习，你也能够更好地展示自己在Spring Boot方面的技能和知识。
 
 
@@ -1780,3 +1786,207 @@ Spring Boot实现配置的自动注入主要依赖于两个核心特性：自动
 5. **自定义Bean：** 如果用户需要覆盖默认的自动配置，可以在应用中定义自己的Bean。Spring Boot会优先使用用户定义的Bean。
 
 总结起来，Spring Boot实现配置的自动注入的核心思想是通过自动配置和条件注解来根据应用的类路径、依赖和配置，自动判断需要哪些功能和Bean，并将它们注入到Spring上下文中。这大大简化了应用的配置和开发流程，减少了开发人员的工作量。如果需要更改默认的自动配置，你可以使用自定义Bean来覆盖默认行为。
+
+## 31. springboot中AOP怎么使用?
+在Spring Boot中使用AOP非常简便，它内置了对AOP的支持，你只需要按照以下步骤进行操作：
+
+1. **创建切面类：** 创建一个带有切面逻辑的类，使用 `@Aspect` 注解标记。在切面类中，你可以定义切入点和通知，如 `@Before`、`@After`、`@Around` 等。
+
+```java
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.stereotype.Component;
+
+@Aspect
+@Component
+public class LoggingAspect {
+
+    @Before("execution(* com.example.service.*.*(..))")
+    public void beforeAdvice() {
+        System.out.println("Before method execution");
+    }
+}
+```
+
+2. **启用AOP自动配置：** 在Spring Boot的主配置类上，使用 `@EnableAspectJAutoProxy` 注解来启用自动配置的AOP。
+
+```java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+
+@SpringBootApplication
+@EnableAspectJAutoProxy
+public class MyApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
+}
+```
+
+3. **运行应用：** 现在，你的应用已经启用了AOP。在运行应用时，切面将会自动织入到匹配的方法中。
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class MyService {
+
+    public void doSomething() {
+        System.out.println("Doing something...");
+    }
+}
+```
+
+在上述示例中，当调用 `MyService` 类中的 `doSomething` 方法时，切面类 `LoggingAspect` 中定义的前置通知将会在方法执行之前被调用。
+
+请注意，Spring Boot默认会扫描主配置类所在的包及其子包，以查找切面类。因此，确保切面类和主配置类在正确的包路径下。
+
+这只是一个简单的示例，你可以根据需要在切面类中定义更多的切入点和通知，以实现不同的横切关注点。Spring Boot的AOP集成非常方便，能够帮助你更好地管理和维护应用中的横切逻辑。
+
+## 32. springboot依赖循环怎么解决？
+当一个类在初始化时需要另一个类的实例，而另一个类又需要第一个类的实例时，就会出现循环依赖问题。
+
+UserService 类注入VipService 类，VipService 类注入UserService 类，就会发生循环依赖的问题。
+
+```
+@Service
+public class UserService {
+
+@Resource
+private VipService vipService;
+}
+
+
+@Service
+public class VipService {
+
+@Resource
+private UserService userService;
+}
+```
+
+解决方法：
+**（1）构造函数注入**
+在构造函数中注入依赖项，而不是在属性中注入
+
+
+```
+public class A {
+   private B b;
+
+   public A(B b) {
+      this.b = b;
+   }
+}
+
+public class B {
+   private A a;
+
+   public B(A a) {
+      this.a = a;
+   }
+}
+```
+
+
+这样，在创建 A 实例时，只需要将 B 实例传递给 A 的构造函数即可，不需要再通过 setter 方法将 B 实例注入到 A 中。同理，在创建 B 实例时，只需要将 A 实例传递给 B 的构造函数即可，不需要再通过 setter 方法将 A 实例注入到 B 中。这样可以避免循环依赖。
+
+**（2）延迟注入**
+为了解决这个问题，可以使用@Lazy注解，将类A或类B中的其中一个延迟加载。
+
+例如，我们可以在类A中使用@Lazy注解，将类A延迟加载，这样在启动应用程序时，Spring容器不会立即加载类A，而是在需要使用类A的时候才会进行加载。这样就避免了循环依赖的问题。
+
+```
+@Component
+public class A {
+
+    private final B b;
+
+    public A(@Lazy B b) {
+      this.b = b;
+    }
+
+    //...
+}
+
+@Component
+public class B {
+
+    private final A a;
+
+    public B(A a) {
+      this.a = a;
+    }
+
+    //...
+}
+```
+
+## 33. 怎么实现springboot中注入的时候，先加载a,再加载b,再加载c,顺序加载？
+在 Spring Boot 中，通常情况下，Bean 的加载顺序是不确定的，因为 Spring 容器会根据依赖关系和初始化策略来决定加载顺序。然而，如果你希望在注入时按照特定的顺序加载 Bean，可以采用以下方法：
+
+1. **使用 `@DependsOn` 注解：** 在需要按照顺序加载的 Bean 上使用 `@DependsOn` 注解来指定依赖关系。这会确保在当前 Bean 加载之前，所依赖的其他 Bean 会被先加载。
+
+   ```java
+   @Service
+   @DependsOn("beanA")
+   public class BeanB {
+       // ...
+   }
+
+   @Service
+   @DependsOn({"beanA", "beanB"})
+   public class BeanC {
+       // ...
+   }
+   ```
+
+2. **使用 `@Order` 注解：** 如果你的 Bean 实现了 `Ordered` 接口，可以使用 `@Order` 注解来指定加载顺序。具有较低值的 Bean 会先加载。
+
+   ```java
+   @Service
+   @Order(1)
+   public class BeanA implements Ordered {
+       // ...
+   }
+
+   @Service
+   @Order(2)
+   public class BeanB implements Ordered {
+       // ...
+   }
+
+   @Service
+   @Order(3)
+   public class BeanC implements Ordered {
+       // ...
+   }
+   ```
+
+3. **使用 `@Configuration` 类：** 创建一个带有 `@Configuration` 注解的配置类，在该类中定义 Bean 的加载顺序。在这种情况下，可以使用 `@DependsOn` 注解或 `@Order` 注解来指定顺序。
+
+   ```java
+   @Configuration
+   public class BeanConfig {
+   
+       @Bean
+       @DependsOn("beanA")
+       public BeanB beanB() {
+           return new BeanB();
+       }
+
+       @Bean
+       @DependsOn({"beanA", "beanB"})
+       public BeanC beanC() {
+           return new BeanC();
+       }
+   }
+   ```
+
+需要注意的是，虽然上述方法可以帮助你在一定程度上控制 Bean 的加载顺序，但 Spring Boot 还是会尽力优化加载过程，可能在特定情况下无法完全保证顺序。如果需要严格保证顺序，最好的做法是在Bean使用时再进行初始化操作，而不是强制控制加载顺序。
+
+
+

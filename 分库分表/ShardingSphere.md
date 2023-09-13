@@ -5,6 +5,11 @@
 - 有三个产品：Sharding-JDBC、Sharding-Proxy、Sharding-Sidecar(ToDo)
 - 定位为==关系型数据库中间件==，合理在分布式环境下使用关系型数据库操作
 
+附：
+- 官网地址：https://shardingsphere.apache.org/
+- 官网开发手册：https://shardingsphere.apache.org/document/legacy/3.x/document/cn/overview/
+- 本文档demo代码地址: https://github.com/zredMonkey/shardingSphere-JDBC-Demo
+
 
 ### 1.2 分库分表
 ### 1.2.1 是什么？
@@ -23,8 +28,7 @@
 
 #### 1.2.2.1 垂直分表
 （1）操作数据库中某张表，把这张表中一部分字段数据存到一张新表里面，再把这张表另一部分字段数据存到另外一张表里面。
-![image](.img/分库分表-1.png)
-
+![image](../.img/分库分表-1.png)
 **好处：**
 如果此时只查询课程基本信息，就只用查询课程基本表即可。
 如果改描述信息，不会锁对应的基本信息。
@@ -34,20 +38,20 @@
 （1）把单一数据库按照业务进行划分，专库专表。
 
 原来：
-![image](.img/分库分表-2.png)
+![image](../.img/分库分表-2.png)
 拆分后:
-![image](.img/分库分表-3.png)
+![image](../.img/分库分表-3.png)
 **好处：**
 减少数据库IO的压力。
 
 #### 1.2.2.3 水平分库
-![image](.img/分库分表-4.png)
+![image](../.img/分库分表-4.png)
 
 **好处：**
 减少单库单表的数据量。
 
 #### 1.2.2.4 水平分表
-![image](.img/分库分表-5.png)
+![image](../.img/分库分表-5.png)
 
 # 二、 Sharding-JDBC 分库分表操作
 ## 2.1 介绍
@@ -64,12 +68,12 @@ Sharding-JDBC 不是做分库分表。
 我们只需要引入相关jar包即可。
 
 主要目的：简化对分库分表之后数据相关操作。
- 
+
 ## 2.2 Sharding-JDBC 实现水平分表
 ### 2.2.1 创建数据库 course_db
 ### 2.2.2 在数据库创建两张表 course_1 和 course_2
 
-![image](.img/分库分表-7.png)
+![image](../.img/分库分表-7.png)
 
 ### 2.2.3 约定规则：如果添加课程 id 是偶数把数据添加 course_1，如果奇数添加到 course_2
 
@@ -112,10 +116,10 @@ spring.shardingsphere.props.sql.show=true
 ## 2.3 Sharding-JDBC 实现水平分库
 
 ### 2.3.1 创建两个数据库
-![image](.img/分库分表-8.png)
+![image](../.img/分库分表-8.png)
 
 ### 2.3.2 创建数据库和表
-![image](.img/分库分表-9.png)
+![image](../.img/分库分表-9.png)
 
 ### 2.3.3 在 SpringBoot 配置文件配置数据库分片规则
 ```
@@ -171,10 +175,10 @@ spring.shardingsphere.props.sql.show=true
 
 ## 2.4 Sharding-JDBC 实现垂直分库
 ### 2.4.1 需求分析
-![image](.img/分库分表-10.png)
+![image](../.img/分库分表-10.png)
 
 ### 2.4.2 创建数据库和表
-![image](.img/分库分表-11.png)
+![image](../.img/分库分表-11.png)
 
 ### 2.4.3 在 application.properties 进行配置
 ```
@@ -230,11 +234,11 @@ spring.shardingsphere.sharding.tables.t_user.table-strategy.inline.algorithm￾e
 ### 2.5.1 公共表
 - 存储固定数据的表，表数据很少发生变化，查询时候经常进行关联
 - 在每个数据库中创建出相同结构公共表
-![image](.img/分库分表-13.png)
+  ![image](../.img/分库分表-13.png)
 
 
 ### 2.5.2 在多个数据库都创建相同结构公共表
-![image](.img/分库分表-12.png)
+![image](../.img/分库分表-12.png)
 
 
 ### 2.5.3 在项目配置文件 application.properties 进行公共表配置
@@ -249,11 +253,11 @@ spring.shardingsphere.sharding.tables.t_udict.key-generator.type=SNOWFLAKE
 ### 2.6.1 读写分离概念
 为了确保数据库产品的稳定性，很多数据库拥有双机热备功能。也就是，第一台数据库服务器，是对外提供增删改业务的生产服务器；第二台数据库服务器，主要进行读的操作。
 原理：让主数据库(master)进行事务性增、改、删操作，而从数据库(slave)处理SELECT查询操作。
-![image](.img/分库分表-14.png)
+![image](../.img/分库分表-14.png)
 
 
 读写原理：
-![image](.img/分库分表-15.png)
+![image](../.img/分库分表-15.png)
 
 ==**Sharding-JDBC 通过 sql 语句语义分析，实现读写分离过程，不会做数据同步(mysql做)**==
 
@@ -302,12 +306,12 @@ GRANT REPLICATION SLAVE ON *.* TO 'db_sync'@'%' IDENTIFIED BY 'db_sync';
 #刷新权限
 FLUSH PRIVILEGES;
 ```
-![image](.img/分库分表-16.png)
+![image](../.img/分库分表-16.png)
 ```
 #确认位点 记录下文件名以及位点
 show master status;
 ```
-![image](.img/分库分表-17.png)
+![image](../.img/分库分表-17.png)
 
 #### 第四步 主从数据同步设置
 ```
@@ -327,7 +331,7 @@ START SLAVE;
 #查看Slave_IO_Runing和Slave_SQL_Runing字段值都为Yes，表示同步配置成功。如果不为Yes，请排查相关异常。
 show slave status
 ```
-![image](.img/分库分表-18.png)
+![image](../.img/分库分表-18.png)
 
 
 ### 2.6.3 Sharding-JDBC 操作
@@ -351,8 +355,6 @@ spring.shardingsphere.sharding.master-slave-rules.ds0.slave-data-source-names=s0
 spring.shardingsphere.sharding.tables.t_user.actual-data-nodes=ds0.t_user
 ```
 
-
-
 # 三、 Sharding-Proxy 分库分表操作
 ## 3.1 介绍
 定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。 目前先提供MySQL版本，它可以使用任何兼容MySQL协议的访问客户端(如：MySQL Command Client, MySQL Workbench等)操作数据，对DBA更加友好。
@@ -360,8 +362,11 @@ spring.shardingsphere.sharding.tables.t_user.actual-data-nodes=ds0.t_user
 - 向应用程序完全透明，可直接当做MySQL使用。
 - 适用于任何兼容MySQL协议的客户端。
 
-## 3.2 实现水平分表
+**定位为透明的数据库代理端**。
 
+![image](../.img/分库分表-19.png)
+
+Sharding-Proxy 独立应用，需要安装服务，进行分库分表或者读写分离配置，启动 使用。
 
 
 # 注：
@@ -372,6 +377,7 @@ spring.shardingsphere.sharding.tables.t_user.actual-data-nodes=ds0.t_user
 
 ## 2、分库分表问题
 （1）跨节点连接查询问题（分页、排序）
-![image](.img/分库分表-6.png)
+
+![image](../.img/分库分表-6.png)
 
 （2）多数据源管理问题

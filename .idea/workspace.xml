@@ -5,45 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3bb2d72e-6a9b-4e0f-9fe5-1f2d638a7477" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-10.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-11.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-12.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-13.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-14.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-15.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-16.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-17.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-18.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-19.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-20.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-21.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-22.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-23.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-24.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-25.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-26.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-27.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-28.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-29.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-3.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-30.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-31.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-32.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-33.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-34.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-35.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-36.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-37.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-38.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-5.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-6.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-7.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-8.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/.img/mybatis-9.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mybatis/Mybatis总结.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mybatis/Mybatis总结.md" beforeDir="false" afterPath="$PROJECT_DIR$/Mybatis/Mybatis总结.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +80,7 @@
       <workItem from="1694626297025" duration="2041000" />
       <workItem from="1695049200191" duration="3245000" />
       <workItem from="1695226200250" duration="41000" />
-      <workItem from="1695307619197" duration="141000" />
+      <workItem from="1695307619197" duration="1338000" />
     </task>
     <servers />
   </component>

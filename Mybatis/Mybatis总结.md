@@ -9,13 +9,13 @@
 ## 1.2 ÎªÊ²Ã´ÒªÊ¹ÓÃMyBatis£¿
 - MyBatisÊÇÒ»¸ö°ë×Ô¶¯»¯µÄ³Ö¾Ã»¯²ã¿ò¼Ü¡£
 - JDBC
-    - SQL¼ÐÔÚJava´úÂë¿éÀï£¬ñîºÏ¶È¸ßµ¼ÖÂÓ²±àÂëÄÚÉË
-    - Î¬»¤²»Ò×ÇÒÊµ¼Ê¿ª·¢ÐèÇóÖÐsqlÊÇÓÐ±ä»¯£¬Æµ·±ÐÞ¸ÄµÄÇé¿ö¶à¼û
+  - SQL¼ÐÔÚJava´úÂë¿éÀï£¬ñîºÏ¶È¸ßµ¼ÖÂÓ²±àÂëÄÚÉË
+  - Î¬»¤²»Ò×ÇÒÊµ¼Ê¿ª·¢ÐèÇóÖÐsqlÊÇÓÐ±ä»¯£¬Æµ·±ÐÞ¸ÄµÄÇé¿ö¶à¼û
 - HibernateºÍJPA
-    - ³¤ÄÑ¸´ÔÓSQL£¬¶ÔÓÚHibernate¶øÑÔ´¦ÀíÒ²²»ÈÝÒ×
-    - ÄÚ²¿×Ô¶¯Éú²úµÄSQL£¬²»ÈÝÒ××öÌØÊâÓÅ»¯¡£
-    - »ùÓÚÈ«Ó³ÉäµÄÈ«×Ô¶¯¿ò¼Ü£¬´óÁ¿×Ö¶ÎµÄPOJO½øÐÐ²¿·ÖÓ³ÉäÊ±±È½ÏÀ§ÄÑ¡£
-    - µ¼ÖÂÊý¾Ý¿âÐÔÄÜÏÂ½µ¡£
+  - ³¤ÄÑ¸´ÔÓSQL£¬¶ÔÓÚHibernate¶øÑÔ´¦ÀíÒ²²»ÈÝÒ×
+  - ÄÚ²¿×Ô¶¯Éú²úµÄSQL£¬²»ÈÝÒ××öÌØÊâÓÅ»¯¡£
+  - »ùÓÚÈ«Ó³ÉäµÄÈ«×Ô¶¯¿ò¼Ü£¬´óÁ¿×Ö¶ÎµÄPOJO½øÐÐ²¿·ÖÓ³ÉäÊ±±È½ÏÀ§ÄÑ¡£
+  - µ¼ÖÂÊý¾Ý¿âÐÔÄÜÏÂ½µ¡£
 - ¶Ô¿ª·¢ÈËÔ±¶øÑÔ£¬ºËÐÄsql»¹ÊÇÐèÒª×Ô¼ºÓÅ»¯
 - ==sqlºÍjava±àÂë·Ö¿ª£¬¹¦ÄÜ±ß½çÇåÎú£¬Ò»¸ö×¨×¢ÒµÎñ¡¢Ò»¸ö×¨×¢Êý¾Ý==¡£
 
@@ -23,18 +23,18 @@
 # ¶þ¡¢MyBatis-È«¾ÖÅäÖÃÎÄ¼þ
 MyBatis µÄÅäÖÃÎÄ¼þ°üº¬ÁËÓ°ÏìMyBatisÐÐÎªÉõÉîµÄÉèÖÃ£¨settings£©ºÍÊôÐÔ£¨properties£©ÐÅÏ¢¡£ÎÄµµµÄ¶¥²ã½á¹¹ÈçÏÂ£º
 - configuration ÅäÖÃ
-    - properties ÊôÐÔ
-    - settings ÉèÖÃ
-    - typeAliases ÀàÐÍÃüÃû
-    - typeHandlers ÀàÐÍ´¦ÀíÆ÷
-    - objectFactory ¶ÔÏó¹¤³§
-    - plugins ²å¼þ
-    - environments »·¾³
-        - environment »·¾³±äÁ¿
-            - transactionManager ÊÂÎñ¹ÜÀíÆ÷
-            - dataSource Êý¾ÝÔ´
-    - databaseIdProvider Êý¾Ý¿â³§ÉÌ±êÊ¶
-    - mappers Ó³ÉäÆ÷
+  - properties ÊôÐÔ
+  - settings ÉèÖÃ
+  - typeAliases ÀàÐÍÃüÃû
+  - typeHandlers ÀàÐÍ´¦ÀíÆ÷
+  - objectFactory ¶ÔÏó¹¤³§
+  - plugins ²å¼þ
+  - environments »·¾³
+    - environment »·¾³±äÁ¿
+      - transactionManager ÊÂÎñ¹ÜÀíÆ÷
+      - dataSource Êý¾ÝÔ´
+  - databaseIdProvider Êý¾Ý¿â³§ÉÌ±êÊ¶
+  - mappers Ó³ÉäÆ÷
 
 ## 2.1 properties ÊôÐÔ
 ![image](.img/mybatis-1.png)
@@ -137,7 +137,7 @@ MyBatis ¿ÉÒÔ¸ù¾Ý²»Í¬µÄÊý¾Ý¿â³§ÉÌÖ´ÐÐ²»Í¬µÄÓï¾ä¡£
 ![image](.img/mybatis-9.png)
 
 - Type£º DB_VENDOR
-    - Ê¹ÓÃMyBatisÌá¹©µÄVendorDatabaseIdProvider½âÎöÊý¾Ý¿â³§ÉÌ±êÊ¶¡£Ò²¿ÉÒÔÊµÏÖDatabaseIdProvider½Ó¿ÚÀ´×Ô¶¨Òå¡£
+  - Ê¹ÓÃMyBatisÌá¹©µÄVendorDatabaseIdProvider½âÎöÊý¾Ý¿â³§ÉÌ±êÊ¶¡£Ò²¿ÉÒÔÊµÏÖDatabaseIdProvider½Ó¿ÚÀ´×Ô¶¨Òå¡£
 - Property-name£ºÊý¾Ý¿â³§ÉÌ±êÊ¶
 - Property-value£ºÎª±êÊ¶ÆðÒ»¸ö±ðÃû£¬·½±ãSQLÓï¾äÊ¹ÓÃdatabaseIdÊôÐÔÒýÓÃ
   ![image](.img/mybatis-10.png)
@@ -190,16 +190,16 @@ selectKey ÔªËØ½«»áÊ×ÏÈÔËÐÐ£¬id »á±»ÉèÖÃ£¬È»ºó²åÈëÓï¾ä»á±»µ÷ÓÃ¡£
 
 ## 4.3 ²ÎÊý£¨Parameters£©´«µÝ
 - µ¥¸ö²ÎÊý
-    - ¿ÉÒÔ½ÓÊÜ»ù±¾ÀàÐÍ£¬¶ÔÏóÀàÐÍ£¬¼¯ºÏÀàÐÍµÄÖµ¡£ÕâÖÖÇé¿öMyBatis¿ÉÖ±½ÓÊ¹ÓÃÕâ¸ö²ÎÊý£¬²»ÐèÒª¾­¹ýÈÎºÎ´¦Àí¡£
+  - ¿ÉÒÔ½ÓÊÜ»ù±¾ÀàÐÍ£¬¶ÔÏóÀàÐÍ£¬¼¯ºÏÀàÐÍµÄÖµ¡£ÕâÖÖÇé¿öMyBatis¿ÉÖ±½ÓÊ¹ÓÃÕâ¸ö²ÎÊý£¬²»ÐèÒª¾­¹ýÈÎºÎ´¦Àí¡£
 - ¶à¸ö²ÎÊý
-    - ÈÎÒâ¶à¸ö²ÎÊý£¬¶¼»á±»MyBatisÖØÐÂ°ü×°³ÉÒ»¸öMap´«Èë¡£
-      MapµÄkeyÊÇparam1£¬param2£¬0£¬1¡­£¬Öµ¾ÍÊÇ²ÎÊýµÄÖµ¡£
+  - ÈÎÒâ¶à¸ö²ÎÊý£¬¶¼»á±»MyBatisÖØÐÂ°ü×°³ÉÒ»¸öMap´«Èë¡£
+    MapµÄkeyÊÇparam1£¬param2£¬0£¬1¡­£¬Öµ¾ÍÊÇ²ÎÊýµÄÖµ¡£
 - ÃüÃû²ÎÊý
-    - Îª²ÎÊýÊ¹ÓÃ@ParamÆðÒ»¸öÃû×Ö£¬MyBatis¾Í»á½«ÕâÐ©²ÎÊý·â×°½ømapÖÐ£¬key¾ÍÊÇÎÒÃÇ×Ô¼ºÖ¸¶¨µÄÃû×Ö
+  - Îª²ÎÊýÊ¹ÓÃ@ParamÆðÒ»¸öÃû×Ö£¬MyBatis¾Í»á½«ÕâÐ©²ÎÊý·â×°½ømapÖÐ£¬key¾ÍÊÇÎÒÃÇ×Ô¼ºÖ¸¶¨µÄÃû×Ö
 - POJO
-    - µ±ÕâÐ©²ÎÊýÊôÓÚÎÒÃÇÒµÎñPOJOÊ±£¬ÎÒÃÇÖ±½Ó´«µÝPOJO
+  - µ±ÕâÐ©²ÎÊýÊôÓÚÎÒÃÇÒµÎñPOJOÊ±£¬ÎÒÃÇÖ±½Ó´«µÝPOJO
 - Map
-    - ÎÒÃÇÒ²¿ÉÒÔ·â×°¶à¸ö²ÎÊýÎªmap£¬Ö±½Ó´«µÝ
+  - ÎÒÃÇÒ²¿ÉÒÔ·â×°¶à¸ö²ÎÊýÎªmap£¬Ö±½Ó´«µÝ
 
 ### 4.3.1 ²ÎÊý´¦Àí
 **(1)²ÎÊýÒ²¿ÉÒÔÖ¸¶¨Ò»¸öÌØÊâµÄÊý¾ÝÀàÐÍ£º**
@@ -301,10 +301,10 @@ fetchType=eager/lazy¿ÉÒÔ¸²¸ÇÈ«¾ÖµÄÑÓ³Ù¼ÓÔØ²ßÂÔ£¬+Ö¸+¶¨Á¢¼´¼ÓÔØ£¨eager£©»òÕßÑÓ³Ù¼
 - ¶¯Ì¬ SQLÊÇMyBatisÇ¿´óÌØÐÔÖ®Ò»¡£¼«´óµÄ¼ò»¯ÎÒÃÇÆ´×°SQLµÄ²Ù×÷¡£
 - ¶¯Ì¬ SQL ÔªËØºÍÊ¹ÓÃ JSTL »òÆäËûÀàËÆ»ùÓÚ XML µÄÎÄ±¾´¦ÀíÆ÷ÏàËÆ¡£
 - MyBatis ²ÉÓÃ¹¦ÄÜÇ¿´óµÄ»ùÓÚ OGNL µÄ±í´ïÊ½À´¼ò»¯²Ù×÷¡£
-    - if
-    - choose (when, otherwise)
-    - trim (where, set)
-    - foreach
+  - if
+  - choose (when, otherwise)
+  - trim (where, set)
+  - foreach
 
 ## 5.1 if
 ![image](.img/mybatis-28.png)
@@ -326,9 +326,9 @@ fetchType=eager/lazy¿ÉÒÔ¸²¸ÇÈ«¾ÖµÄÑÓ³Ù¼ÓÔØ²ßÂÔ£¬+Ö¸+¶¨Á¢¼´¼ÓÔØ£¨eager£©»òÕßÑÓ³Ù¼
 ¶¯Ì¬ SQL µÄÁíÍâÒ»¸ö³£ÓÃµÄ±ØÒª²Ù×÷ÊÇÐèÒª¶ÔÒ»¸ö¼¯ºÏ½øÐÐ±éÀú£¬Í¨³£ÊÇÔÚ¹¹½¨ IN Ìõ¼þÓï¾äµÄÊ±ºò¡£
 ![image](.img/mybatis-33.png)
 - µ±µü´úÁÐ±í¡¢¼¯ºÏµÈ¿Éµü´ú¶ÔÏó»òÕßÊý×éÊ±
-    - indexÊÇµ±Ç°µü´úµÄ´ÎÊý£¬itemµÄÖµÊÇ±¾´Îµü´ú»ñÈ¡µÄÔªËØ
+  - indexÊÇµ±Ç°µü´úµÄ´ÎÊý£¬itemµÄÖµÊÇ±¾´Îµü´ú»ñÈ¡µÄÔªËØ
 - µ±Ê¹ÓÃ×Öµä£¨»òÕßMap.Entry¶ÔÏóµÄ¼¯ºÏ£©Ê±
-    - indexÊÇ¼ü£¬itemÊÇÖµ
+  - indexÊÇ¼ü£¬itemÊÇÖµ
 
 ## 5.5 bind
 bind ÔªËØ¿ÉÒÔ´Ó OGNL ±í´ïÊ½ÖÐ´´½¨Ò»¸ö±äÁ¿²¢½«Æä°ó¶¨µ½ÉÏÏÂÎÄ¡£±ÈÈç£º
@@ -365,15 +365,25 @@ MyBatisÏµÍ³ÖÐÄ¬ÈÏ¶¨ÒåÁËÁ½¼¶»º´æ¡£
 Í¬Ò»´Î»á»°ÆÚ¼äÖ»Òª²éÑ¯¹ýµÄÊý¾Ý¶¼»á±£´æÔÚµ±Ç°SqlSessionµÄÒ»¸öMapÖÐ¡£
 ? key:hashCode+²éÑ¯µÄSqlId+±àÐ´µÄsql²éÑ¯Óï¾ä+²ÎÊý
 
-Ò»¼¶»º´æÊ§Ð§µÄËÄÖÖÇé¿ö
+Ò»¼¶»º´æÊ§Ð§µÄËÄÖÖÇé¿ö£º
 - 1¡¢²»Í¬µÄSqlSession¶ÔÓ¦²»Í¬µÄÒ»¼¶»º´æ
 - 2¡¢Í¬Ò»¸öSqlSessionµ«ÊÇ²éÑ¯Ìõ¼þ²»Í¬
 - 3¡¢Í¬Ò»¸öSqlSessionÁ½´Î²éÑ¯ÆÚ¼äÖ´ÐÐÁËÈÎºÎÒ»´ÎÔöÉ¾¸Ä²Ù×÷
 - 4¡¢Í¬Ò»¸öSqlSessionÁ½´Î²éÑ¯ÆÚ¼äÊÖ¶¯Çå¿ÕÁË»º´æ
 
 ## 6.3 ¶þ¼¶»º´æ
-¶þ¼¶»º´æ(second level cache)£¬È«¾Ö×÷ÓÃÓò»º´æ
+¶þ¼¶»º´æ(second level cache)£¬»ùÓÚnamespace¼¶±ð»º´æ£¬Ò»¸önamespace¶ÔÓ¦Ò»¸ö¶þ¼¶»º´æ¡£
+
+**¹¤×÷»úÖÆ£º**
+1¡¢Ò»¸ö»á»°£¬²éÑ¯Ò»ÌõÊý¾Ý£¬Õâ¸öÊý¾Ý»á±»·ÅÔÚµ±Ç°»á»°µÄÒ»¼¶»º´æÖÐ£»
+2¡¢Èç¹û»á»°¹Ø±Õ£»Ò»¼¶»º´æÖÐµÄÊý¾Ý»á±»±£´æµ½¶þ¼¶»º´æÖÐ£»ÐÂµÄ»á»°²éÑ¯ÐÅÏ¢»á²ÎÕÕ¶þ¼¶»º´æÖÐµÄÄÚÈÝ¡£
+3¡¢SqlSession===EmployeeMapper ===>Employee  (namespaceÏàµ±ÓÚXXXMapper)
+DepartmentMapper===>Department
+²»Í¬namespace²éÑ¯³öµÄÊý¾Ý»á·ÅÔÚ×Ô¼º¶ÔÓ¦µÄ»º´æÖÐ(mapÖÐ)
+
+
 ¶þ¼¶»º´æÄ¬ÈÏ²»¿ªÆô£¬ÐèÒªÊÖ¶¯ÅäÖÃ
+
 MyBatisÌá¹©¶þ¼¶»º´æµÄ½Ó¿ÚÒÔ¼°ÊµÏÖ£¬»º´æÊµÏÖÒªÇóPOJOÊµÏÖSerializable½Ó¿Ú
 ==¶þ¼¶»º´æÔÚ SqlSession ¹Ø±Õ»òÌá½»Ö®ºó²Å»áÉúÐ§==
 
@@ -386,20 +396,20 @@ MyBatisÌá¹©¶þ¼¶»º´æµÄ½Ó¿ÚÒÔ¼°ÊµÏÖ£¬»º´æÊµÏÖÒªÇóPOJOÊµÏÖSerializable½Ó¿Ú
 
 ## 6.4 »º´æÏà¹ØÊôÐÔ
 - eviction=¡°FIFO¡±£º»º´æ»ØÊÕ²ßÂÔ£º
-    -  LRU ¨C ×î½ü×îÉÙÊ¹ÓÃµÄ£ºÒÆ³ý×î³¤Ê±¼ä²»±»Ê¹ÓÃµÄ¶ÔÏó¡£
-    -  FIFO ¨C ÏÈ½øÏÈ³ö£º°´¶ÔÏó½øÈë»º´æµÄË³ÐòÀ´ÒÆ³ýËüÃÇ¡£
-    -  SOFT ¨C ÈíÒýÓÃ£ºÒÆ³ý»ùÓÚÀ¬»ø»ØÊÕÆ÷×´Ì¬ºÍÈíÒýÓÃ¹æÔòµÄ¶ÔÏó¡£
-    -  WEAK ¨C ÈõÒýÓÃ£º¸ü»ý¼«µØÒÆ³ý»ùÓÚÀ¬»øÊÕ¼¯Æ÷×´Ì¬ºÍÈõÒýÓÃ¹æÔòµÄ¶ÔÏó¡£
-    -  Ä¬ÈÏµÄÊÇ LRU¡£
+  -  LRU ¨C ×î½ü×îÉÙÊ¹ÓÃµÄ£ºÒÆ³ý×î³¤Ê±¼ä²»±»Ê¹ÓÃµÄ¶ÔÏó¡£
+  -  FIFO ¨C ÏÈ½øÏÈ³ö£º°´¶ÔÏó½øÈë»º´æµÄË³ÐòÀ´ÒÆ³ýËüÃÇ¡£
+  -  SOFT ¨C ÈíÒýÓÃ£ºÒÆ³ý»ùÓÚÀ¬»ø»ØÊÕÆ÷×´Ì¬ºÍÈíÒýÓÃ¹æÔòµÄ¶ÔÏó¡£
+  -  WEAK ¨C ÈõÒýÓÃ£º¸ü»ý¼«µØÒÆ³ý»ùÓÚÀ¬»øÊÕ¼¯Æ÷×´Ì¬ºÍÈõÒýÓÃ¹æÔòµÄ¶ÔÏó¡£
+  -  Ä¬ÈÏµÄÊÇ LRU¡£
 - flushInterval£ºË¢ÐÂ¼ä¸ô£¬µ¥Î»ºÁÃë
-    -  Ä¬ÈÏÇé¿öÊÇ²»ÉèÖÃ£¬Ò²¾ÍÊÇÃ»ÓÐË¢ÐÂ¼ä¸ô£¬»º´æ½ö½öµ÷ÓÃÓï¾äÊ±Ë¢ÐÂ
+  -  Ä¬ÈÏÇé¿öÊÇ²»ÉèÖÃ£¬Ò²¾ÍÊÇÃ»ÓÐË¢ÐÂ¼ä¸ô£¬»º´æ½ö½öµ÷ÓÃÓï¾äÊ±Ë¢ÐÂ
 - size£ºÒýÓÃÊýÄ¿£¬ÕýÕûÊý
-    -  ´ú±í»º´æ×î¶à¿ÉÒÔ´æ´¢¶àÉÙ¸ö¶ÔÏó£¬Ì«´óÈÝÒ×µ¼ÖÂÄÚ´æÒç³ö
+  -  ´ú±í»º´æ×î¶à¿ÉÒÔ´æ´¢¶àÉÙ¸ö¶ÔÏó£¬Ì«´óÈÝÒ×µ¼ÖÂÄÚ´æÒç³ö
 - readOnly£ºÖ»¶Á£¬true/false
-    -  true£ºÖ»¶Á»º´æ£»»á¸øËùÓÐµ÷ÓÃÕß·µ»Ø»º´æ¶ÔÏóµÄÏàÍ¬ÊµÀý¡£Òò´ËÕâÐ©¶ÔÏó
-       ²»ÄÜ±»ÐÞ¸Ä¡£ÕâÌá¹©ÁËºÜÖØÒªµÄÐÔÄÜÓÅÊÆ¡£
-    -  false£º¶ÁÐ´»º´æ£»»á·µ»Ø»º´æ¶ÔÏóµÄ¿½±´£¨Í¨¹ýÐòÁÐ»¯£©¡£Õâ»áÂýÒ»Ð©£¬
-       µ«ÊÇ°²È«£¬Òò´ËÄ¬ÈÏÊÇ false¡£
+  -  true£ºÖ»¶Á»º´æ£»»á¸øËùÓÐµ÷ÓÃÕß·µ»Ø»º´æ¶ÔÏóµÄÏàÍ¬ÊµÀý¡£Òò´ËÕâÐ©¶ÔÏó
+     ²»ÄÜ±»ÐÞ¸Ä¡£ÕâÌá¹©ÁËºÜÖØÒªµÄÐÔÄÜÓÅÊÆ¡£²»°²È«£¬ËÙ¶È¿ì
+  -  false£º¶ÁÐ´»º´æ£»»á·µ»Ø»º´æ¶ÔÏóµÄ¿½±´£¨Í¨¹ýÐòÁÐ»¯£©¡£Õâ»áÂýÒ»Ð©£¬
+     µ«ÊÇ°²È«£¬Òò´ËÄ¬ÈÏÊÇ false¡£
 
 ## 6.5 »º´æÓÐ¹ØÉèÖÃ
 1¡¢È«¾ÖsettingµÄcacheEnable£º
